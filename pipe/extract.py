@@ -1,79 +1,148 @@
-# constitution_pdf_processing.py
+# extract.py
+import re
+from typing import Dict, List, Optional, Tuple
+import fitz  # PyMuPDF
 
-def extract_and_clean_pdf_pages(pdf_path):
-    import fitz  # PyMuPDF
-    import re
 
-    doc = fitz.open(pdf_path)
-    pages_and_chunks_raw = []
+_HEADER_RE = re.compile(r"THE\s+CONSTITUTION\s+OF\s+INDIA", re.IGNORECASE)
+_SECTION_LINE_RE = re.compile(r"^\((.+?)\)$")  # e.g., "(PART IV—DIRECTIVE PRINCIPLES...)"
+_FOOTNOTE_SEP_RE_DEFAULT = re.compile(r"^[_]{5,}$")  # line of 5+ underscores
+_STANDALONE_DIGITS_RE = re.compile(r"^\d+$")
 
-    for page_num in range(len(doc)):
-        text = doc[page_num].get_text("text")
 
-        # 1) strip headers / bare-page digits
-        cleaned_lines = []
-        for line in text.splitlines():
-            stripped = line.strip()
-            if not re.search(r"THE\s+CONSTITUTION\s+OF\s+INDIA", stripped, re.IGNORECASE) and not stripped.isdigit():
-                cleaned_lines.append(line)
-        cleaned_text = "\n".join(cleaned_lines).strip()
+def _clean_and_split(text: str, footnote_sep_re: re.Pattern) -> tuple[str, str]:
+    """Remove headers/standalone digits, then split main text vs footnotes."""
+    cleaned_lines: List[str] = []
+    for line in text.splitlines():
+        s = line.strip()
+        if _HEADER_RE.search(s):
+            continue
+        if _STANDALONE_DIGITS_RE.match(s):
+            continue
+        cleaned_lines.append(line)
 
-        # 2) split main text vs. foot-notes
-        lines = cleaned_text.splitlines()
-        main_lines, foot_lines = [], []
-        in_footnotes = False
-        separator = r'^[_]{5,}$'          # ≥5 underscores
-        for ln in lines:
-            if re.match(separator, ln.strip()):
-                in_footnotes = True
+    cleaned_text = "\n".join(cleaned_lines).strip()
+    lines = cleaned_text.splitlines()
+
+    main_text_lines: List[str] = []
+    footnotes_lines: List[str] = []
+    in_footnotes = False
+
+    for line in lines:
+        if footnote_sep_re.match(line.strip()):
+            in_footnotes = True
+            continue
+        (footnotes_lines if in_footnotes else main_text_lines).append(line)
+
+    main_text = "\n".join(main_text_lines).strip()
+    footnotes = "\n".join(footnotes_lines).strip()
+    return main_text, footnotes
+
+
+def _detect_section(main_text: str, probe_lines: int = 5) -> str:
+    """Look for a line like '(PART ...)' in the first few lines."""
+    for line in main_text.splitlines()[:probe_lines]:
+        m = _SECTION_LINE_RE.match(line.strip())
+        if m:
+            return m.group(1).strip()
+    return ""
+
+
+def extract_pages(
+    pdf_path: str,
+    *,
+    page_min: int = 32,  # keep from this inclusive
+    skip_ranges: Optional[List[Tuple[int, int]]] = None,  # inclusive ranges
+    skip_pages: Optional[List[int]] = None,               # explicit page_numbers to skip
+    manual_section_labels: Optional[Dict[int, str]] = None,  # {page_number: "Section Title"}
+    footnote_separator_regex: str = r"^[_]{5,}$",
+) -> List[Dict]:
+    """
+    Extract cleaned pages with metadata:
+    returns list of dicts with keys: page_number, text, section, footnotes
+
+    Tips:
+      - Prefer passing `manual_section_labels` with real PDF page numbers.
+      - Avoid brittle index-based overrides.
+    """
+    if skip_ranges is None:
+        skip_ranges = [(390, 400)]  # inclusive
+    if skip_pages is None:
+        skip_pages = [142]
+
+    # Build a set of pages to skip
+    skip_set = set(skip_pages)
+    for a, b in skip_ranges:
+        skip_set.update(range(a, b + 1))
+
+    footnote_sep_re = re.compile(footnote_separator_regex)
+
+    pages: List[Dict] = []
+    with fitz.open(pdf_path) as doc:
+        for i in range(len(doc)):
+            page_number = i + 1  # human-readable page number
+            if page_number < page_min:
                 continue
-            (foot_lines if in_footnotes else main_lines).append(ln)
+            if page_number in skip_set:
+                continue
 
-        main_text = "\n".join(main_lines).strip()
-        footnotes = "\n".join(foot_lines).strip()
+            raw_text = doc[i].get_text("text")
+            main_text, footnotes = _clean_and_split(raw_text, footnote_sep_re)
+            section = _detect_section(main_text)
 
-        # 3) grab “(Section …)” metadata (first 5 lines)
-        section = ""
-        sec_pat = r"^\((.+?)\)$"
-        for ln in main_text.splitlines()[:5]:
-            m = re.match(sec_pat, ln.strip())
-            if m:
-                section = m.group(1).strip()
-                break
-
-        pages_and_chunks_raw.append(
-            dict(
-                page_number=page_num + 1,
-                text=main_text,
-                section=section,
-                footnotes=footnotes,
+            pages.append(
+                {
+                    "page_number": page_number,
+                    "text": main_text,
+                    "section": section,
+                    "footnotes": footnotes,  # consistent key name
+                }
             )
-        )
-    doc.close()
 
-    pages_and_chunks = [
-    item for item in pages_and_chunks_raw
-    if item["page_number"] >= 32
-    and not (390 <= item["page_number"] <= 400)
-    and item["page_number"] != 142
-    ]
+    # Apply manual section labels (by real page_number), if provided
+    if manual_section_labels:
+        label_map = {int(k): v for k, v in manual_section_labels.items()}
+        for item in pages:
+            if item["page_number"] in label_map:
+                item["section"] = label_map[item["page_number"]]
 
-    for i in range(len(pages_and_chunks)-2):  
-        if not pages_and_chunks[i]["section"] :  
-            # Fill from the next one
-            pages_and_chunks[i]["section"] = pages_and_chunks[i + 1]["section"]
+    # Fill missing sections (forward-fill, then backfill leading empties)
+    last_section = ""
+    for item in pages:
+        if item["section"]:
+            last_section = item["section"]
+        elif last_section:
+            item["section"] = last_section
 
-    pages_and_chunks[0]["section"] = "Preamble"  # Page 32
-    pages_and_chunks[24]["section"] = "PART IVA FUNDAMENTAL DUTIES"  # Page 56
-    pages_and_chunks[250]["section"] = "PART XXII SHORT TITLE, COMMENCEMENT, AUTHORITATIVE TEXT IN HINDI AND REPEALS"  # Page 283
-    pages_and_chunks[308]["section"] = 'Seventh Schedule' 
-    pages_and_chunks[325]["section"] = 'Ninth Schedule'
-    pages_and_chunks[347]["section"] = 'Eleventh Schedule'
-    pages_and_chunks[348]["section"] = 'Twelfth Schedule'
-    pages_and_chunks[357]["section"] = "APPENDIX II"  # Page 401
-    pages_and_chunks[358]["section"] = "APPENDIX III"  # Page 402
+    # Backfill if the first few items are still empty
+    first_non_empty = next((p["section"] for p in pages if p["section"]), "")
+    if first_non_empty:
+        for item in pages:
+            if item["section"]:
+                break
+            item["section"] = first_non_empty
 
-    return pages_and_chunks_raw
-
+    return pages
 
 
+# Example usage (remove or adapt in your pipeline):
+if __name__ == "__main__":
+    # Provide page-number based labels instead of brittle indexes
+    manual_labels = {
+        32: "Preamble",
+        56: "PART IVA FUNDAMENTAL DUTIES",
+        283: "PART XXII SHORT TITLE, COMMENCEMENT, AUTHORITATIVE TEXT IN HINDI AND REPEALS",
+        # Add exact page numbers for Schedules/Appendices if you know them:
+        # 341: "Seventh Schedule",
+        # 358: "Ninth Schedule",
+        # 380: "Eleventh Schedule",
+        # 381: "Twelfth Schedule",
+        401: "APPENDIX II",
+        402: "APPENDIX III",
+    }
+
+    result = extract_pages(
+        "constitution of India.pdf",
+        manual_section_labels=manual_labels,
+    )
+    # (You can print or persist `result` in your pipeline)
