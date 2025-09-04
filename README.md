@@ -1,6 +1,4 @@
-The project explores the possibility of Retrieval-Augmented Generation (RAG) applied to the Constitution of India, by combining traditional information retrieval with modern language models. 
-It demonstrates how raw constitutional text can be extracted, cleaned, chunked, embedded, and stored in a vector index, enabling accurate, citation-grounded answers to user queries. 
-This work aims to serve as a foundation for legal and policy assistants, exam preparation tools, and broader applications in structured document retrieval.
+The project explores the possibility of Retrieval-Augmented Generation (RAG) applied to the Constitution of India, by combining traditional information retrieval with modern language models. It demonstrates how raw constitutional text is extracted using PyMuPDF, cleaned and segmented with spaCy into sentence/section-aware chunks, then embedded with SentenceTransformers (multi-qa-mpnet-base-dot-v1). These embeddings are stored as PyTorch tensors and searched via CUDA-accelerated similarity operations. For generation, the system employs google/gemma-2b-it through Hugging Face Transformers with bitsandbytes 4-bit quantization, enabling efficient inference on limited GPU resources. Together, this pipeline produces accurate, citation-grounded answers to user queries. The work aims to serve as a foundation for legal and policy assistants, exam preparation tools, and broader applications in structured document retrieval.
 
 
 The work is still in progress, will be uploading the whole pipeline soon ...
