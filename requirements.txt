@@ -1,18 +1,16 @@
-#langchain==0.3.27
+
 PyPDF2==3.0.1
 python-dotenv==1.0.0
-#streamlit==1.18.1
-#faiss-cpu==1.12.0
 altair<5
-PyMuPDF
-torch
+PyMuPDF==1.26.4
+torch==2.8.0+cu129
+torchvision==0.23.0+cu129
 ipykernel
 matplotlib
 spacy ==3.8.7
 numpy ==2.3.2
 huggingface_hub[hf_xet]
 tiktoken
-sentence-transformers
 ipywidgets
 transformers==4.55.4
 accelerate==1.10.0
@@ -20,5 +18,10 @@ bitsandbytes==0.47.0
 safetensors==0.6.2
 scikit-learn==1.7.1
 wheel
-scipy
-tqdm
+scipy==1.16.1
+sentence-transformers==5.1.0
+
+
+
+
+
