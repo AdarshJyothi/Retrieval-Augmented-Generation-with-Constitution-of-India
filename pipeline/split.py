@@ -146,7 +146,7 @@ def split_into_articles(chapter_split):
                                       'character count':len(whole_text) ,
                                       'token count': count_tokens(whole_text)})
 
-    data = article_split[:399]#excluding the schedules and and appendices 
+    data = article_split[:399]#excluding the schedules and and appendices -again specific to this pdf
     return data
 
 

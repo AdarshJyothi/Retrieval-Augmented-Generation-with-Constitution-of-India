@@ -103,7 +103,7 @@ def extract_pages(
         if not pages[i]["section"]:
             pages[i]["section"] = pages[i + 1]["section"]
 
-    # Manual overrides by index (using list index, not page_number)
+    # Manual overrides by index (using list index, not page_number)- specific for this pdf
     pages[0]["section"] = "Preamble"  # Page 32
     pages[24]["section"] = "PART IVA FUNDAMENTAL DUTIES"  # Page 56
     pages[250]["section"] = "PART XXII SHORT TITLE, COMMENCEMENT, AUTHORITATIVE TEXT IN HINDI AND REPEALS"  # Page 283
