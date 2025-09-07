@@ -18,9 +18,9 @@ Together, this pipeline produces accurate, **citation-grounded answers** to user
 
 ## Versions 
 
-Python: 3.12.9
+### Python: 3.12.9
 
-PyTorch : 
+### PyTorch : 
 
 <img width="455" height="110" alt="image" src="https://github.com/user-attachments/assets/057a83ec-9f7c-465f-834a-4feb066becdd" />
 
@@ -30,13 +30,14 @@ To install, run this inside your venv :
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu129
 ```
 
-soaCy Language model: "en_core_web_sm" 
+### spaCy Language model: "en_core_web_sm" 
 
 To install, run this inside your venv : 
 ```bash 
 python -m spacy download en_core_web_sm
 ```
 
+---
 
 ## 🚀 How to Run the Pipeline
 
@@ -78,7 +79,7 @@ From the project root, execute:
 python main.py
 ```
 
-
+---
     
 This will :
 
