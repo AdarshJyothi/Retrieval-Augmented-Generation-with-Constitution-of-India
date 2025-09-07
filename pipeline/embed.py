@@ -34,7 +34,7 @@ def add_embeddings_to_data(data, model, batch_size=32):
     
     return data
 
-def save_embeddings_to_csv(data, save_path="constitution_embeddings.csv"):
+def save_embeddings_to_csv(data, save_path="constitution_embeddings_test.csv"):
     """
     Save the data with embeddings to a CSV file using pandas.
     """
@@ -42,7 +42,7 @@ def save_embeddings_to_csv(data, save_path="constitution_embeddings.csv"):
     embeddings_df.to_csv(save_path, index=False)
     print(f"Embeddings saved to {save_path}")
 
-def process_data_with_embeddings(final_data, model_name="multi-qa-mpnet-base-dot-v1", device="cuda", batch_size=32, save_path="constitution_embeddings.csv"):
+def process_data_with_embeddings(final_data, model_name="multi-qa-mpnet-base-dot-v1", device="cuda", batch_size=32, save_path="constitution_embeddings_test.csv"):
     """
     Extended main function to add embeddings, and save to CSV
     Returns the final data with embeddings.

@@ -3,8 +3,6 @@ PyPDF2==3.0.1
 python-dotenv==1.0.0
 altair<5
 PyMuPDF==1.26.4
-torch==2.8.0+cu129
-torchvision==0.23.0+cu129
 ipykernel
 matplotlib
 spacy ==3.8.7
