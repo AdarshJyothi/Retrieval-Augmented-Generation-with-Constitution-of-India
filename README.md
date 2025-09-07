@@ -16,19 +16,40 @@ Together, this pipeline produces accurate, **citation-grounded answers** to user
 
 ---
 
+## Versions 
+
+### Python: 3.12.9
+
+### PyTorch : 
+
+<img width="455" height="110" alt="image" src="https://github.com/user-attachments/assets/057a83ec-9f7c-465f-834a-4feb066becdd" />
 
 
+To install, run this inside your venv : 
+```bash 
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu129
+```
 
+### spaCy Language model: "en_core_web_sm" 
 
+To install, run this inside your venv : 
+```bash 
+python -m spacy download en_core_web_sm
+```
+
+---
 
 ## 🚀 How to Run the Pipeline
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/AdarshJyothi/Retrieval-Augmented-Generation-with-Constitution-of-India.git
-
 cd <your repo>
 ```
+```bash
+git clone https://github.com/AdarshJyothi/Retrieval-Augmented-Generation-with-Constitution-of-India.git
+```
+
+
 ### 2. Set up and activate a virtual environment (recommended)
 
 ### 3. Install dependencies
@@ -58,14 +79,14 @@ From the project root, execute:
 python main.py
 ```
 
-
+---
     
 This will :
 
 * Extract the constitutional text from the provided PDF
 * Split into sections, chapters, and articles
 * Chunk into manageable token lengths
-* Generate embeddings and store them on the GPU for fast similarity search
+* Generate embeddings and store them on the GPU for fast similarity search. The embeddings will be saved as `constitution_embeddings_test.csv`
 
 
 ⚠️ Note: The work is still in progress — the complete pipeline will be uploaded soon.
