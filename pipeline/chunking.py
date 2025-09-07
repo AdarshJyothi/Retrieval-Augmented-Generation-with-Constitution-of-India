@@ -51,49 +51,35 @@ def sentence_split(text, max_tokens=500):
 
 
 #i/p : list of strings
-#function : Merge consecutive pairs of chunks if their combined token count is < max_tokens. Repeat until no more merges possible. Preserves order.
+#function : Merge consecutive pairs of chunks if their combined token count is < max_tokens. Preserves order.
 #o/p : list of dictionaries 
 
+
 def merge_consecutive_pairs(chunks, max_tokens=500):
+    if not chunks:
+        return []
     
-    if len(chunks) < 2:
-        return chunks
-
-    changed = True
-    current_list = chunks[:]
-
-    while changed:
-        changed = False
-        merged = []
-        i = 0
-        while i < len(current_list):
-            if i == len(current_list) - 1:
-                # Last element left as is if odd
-                merged.append(current_list[i])
-                i += 1
-            else:
-                first = current_list[i]
-                second = current_list[i + 1]
-                combined_tokens = first['token_count'] + second['token_count']
-
-                if combined_tokens < max_tokens:
-                    # Merge
-                    merged_text = first['text'] + ' ' + second['text']
-                    merged_dict = {
-                        'section': first['section'],
-                        'text': merged_text,
-                        'token_count': count_tokens(merged_text), # Recalculate for accuracy
-                        'chapter' : first['chapter']
-                    }
-                    merged.append(merged_dict)
-                    changed = True
-                    i += 2
-                else:
-                    merged.append(first)
-                    i += 1
-        current_list = merged
-    return current_list
-
+    merged = []
+    # Start with the first chunk as the current
+    current = chunks[0].copy()  # Copy to avoid modifying original
+    
+    for i in range(1, len(chunks)):
+        next_chunk = chunks[i]
+        combined_tokens = current['token_count'] + next_chunk['token_count']
+        
+        if combined_tokens < max_tokens:
+            # Merge: Append text, recalculate tokens, keep first's section/chapter
+            current['text'] += ' ' + next_chunk['text']
+            current['token_count'] = count_tokens(current['text'])
+        else:
+            # Can't merge; append current to result and start new current
+            merged.append(current)
+            current = next_chunk.copy()  # Copy next to start new
+    
+    # Don't forget to append the last current
+    merged.append(current)
+    
+    return merged
 
 def split_large_texts(data):
     """
