@@ -1,7 +1,7 @@
 
 # Retrieval-Augmented Generation with the Constitution of India
 
-The project explores the possibility of **Retrieval-Augmented Generation (RAG)** applied to the Constitution of India, by combining traditional information retrieval with modern language models.  
+This project examines the application of Retrieval-Augmented Generation (RAG) to the Constitution of India, integrating traditional information retrieval techniques with modern language models. The system is designed and implemented entirely from scratch in a local environment, ensuring full control over the data pipeline. By eliminating dependence on external APIs, the approach safeguards sensitive legal and policy data, prevents unintended data transfer to third-party services, and promotes reproducibility. The project demonstrates a self-contained framework that can be extended to other legal and governmental corpora for research, education, and policy-support applications.
 
 It demonstrates how raw constitutional text is:  
 - Extracted using **PyMuPDF**  
@@ -10,7 +10,7 @@ It demonstrates how raw constitutional text is:
 
 These embeddings are stored as **PyTorch tensors** and searched via **CUDA-accelerated similarity operations**.  
 
-For generation, the system employs **google/gemma-2b-it** through Hugging Face Transformers with **bitsandbytes 4-bit quantization**, enabling efficient inference on limited GPU resources.  
+For text generation, the system employs **google/gemma-2b-it** via Hugging Face Transformers with **bitsandbytes 4-bit quantization**, enabling efficient inference on limited GPU resources.  
 
 Together, this pipeline produces accurate, **citation-grounded answers** to user queries. The work aims to serve as a foundation for legal and policy assistants, exam preparation tools, and broader applications in structured document retrieval.  
 
