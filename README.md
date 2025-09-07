@@ -25,7 +25,7 @@ Together, this pipeline produces accurate, **citation-grounded answers** to user
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/AdarshJyothiRetrieval-Augmented-Generation-with-Constitution-of-India.git
+git clone https://github.com/AdarshJyothi/Retrieval-Augmented-Generation-with-Constitution-of-India.git
 
 cd <your repo>
 ```
