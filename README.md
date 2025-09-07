@@ -18,14 +18,17 @@ Together, this pipeline produces accurate, **citation-grounded answers** to user
 
 ## versions 
 
-Python : 3.12.9
+Python: 3.12.9
 
 PyTorch : 
 
 <img width="455" height="110" alt="image" src="https://github.com/user-attachments/assets/057a83ec-9f7c-465f-834a-4feb066becdd" />
 
 
-To install, run :  pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu129
+To install, run : 
+```bash 
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu129
+```
 
 
 
