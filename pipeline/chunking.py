@@ -1,4 +1,4 @@
-from utils import count_tokens
+from pipeline.utils import count_tokens
 import spacy
 from sentence_transformers import SentenceTransformer, util
 # Load spaCy once

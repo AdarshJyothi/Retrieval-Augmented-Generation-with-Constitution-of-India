@@ -2,7 +2,7 @@ import re
 import string
 import spacy
 
-from utils import count_tokens
+from pipeline.utils import count_tokens
 
 
 
@@ -41,8 +41,7 @@ def split_into_sections(pages):
         sections_list.append({
             "section": section_name,
             "consolidated_text": text,
-            "section_character_count": len(text),
-            "section_token_count": count_tokens(text),
+            "token_count": count_tokens(text),
             "page_numbers": data["page_numbers"],
             "footnotes": data["footnotes"]
         })
@@ -65,9 +64,8 @@ def split_into_chapters(sections_list):
             # No chapters found - keep the section as is
             chapter_split.append({
                 'section': section_name,
-                'chapter': None,
+                'chapter': str(0),
                 'consolidated_text': text,
-                "character_count" : len(text),
                 "token_count" : count_tokens(text),
             })
         else:
@@ -82,7 +80,6 @@ def split_into_chapters(sections_list):
                     'section': section_name,
                     'chapter': chapter_title,
                     'consolidated_text': chapter_text,
-                    "character_count" : len(chapter_text),
                     "token_count" : count_tokens(chapter_text),
                 })
     return chapter_split
@@ -133,8 +130,7 @@ def split_into_articles(chapter_split):
                                            'text': chunk,
                                            'section': section,
                                            'chapter': chapter,
-                                           'character count':len(chunk) ,
-                                           'token count': count_tokens(chunk)})
+                                           'token_count': count_tokens(chunk)})
 
         else: # No splits, add the whole text if not empty
             whole_text = consolidated_text.strip()
@@ -143,8 +139,7 @@ def split_into_articles(chapter_split):
                                       'text': whole_text,
                                       'section': section,
                                       'chapter': chapter,
-                                      'character count':len(whole_text) ,
-                                      'token count': count_tokens(whole_text)})
+                                      'token_count': count_tokens(whole_text)})
 
     data = article_split[:399]#excluding the schedules and and appendices -again specific to this pdf
     return data
