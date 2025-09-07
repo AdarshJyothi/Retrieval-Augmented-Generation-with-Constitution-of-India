@@ -25,10 +25,13 @@ Together, this pipeline produces accurate, **citation-grounded answers** to user
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/AdarshJyothi/Retrieval-Augmented-Generation-with-Constitution-of-India.git
-
 cd <your repo>
 ```
+```bash
+git clone https://github.com/AdarshJyothi/Retrieval-Augmented-Generation-with-Constitution-of-India.git
+```
+
+
 ### 2. Set up and activate a virtual environment (recommended)
 
 ### 3. Install dependencies
