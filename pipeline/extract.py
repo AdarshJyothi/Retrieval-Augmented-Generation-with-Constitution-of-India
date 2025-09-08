@@ -1,6 +1,6 @@
 # extract.py
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import Optional 
 import fitz  # PyMuPDF
 
 
@@ -24,8 +24,8 @@ def _clean_and_split(text: str, footnote_sep_re: re.Pattern) -> tuple[str, str]:
     cleaned_text = "\n".join(cleaned_lines).strip()
     lines = cleaned_text.splitlines()
 
-    main_text_lines: List[str] = []
-    footnotes_lines: List[str] = []
+    main_text_lines: list[str] = []
+    footnotes_lines: list[str] = []
     in_footnotes = False
 
     for line in lines:
@@ -52,10 +52,10 @@ def extract_pages(
     pdf_path: str,
     *,
     page_min: int = 32,  # keep from this inclusive
-    skip_ranges: Optional[List[Tuple[int, int]]] = None,  # inclusive ranges
-    skip_pages: Optional[List[int]] = None,               # explicit page_numbers to skip
+    skip_ranges: Optional[list[tuple[int, int]]] = None,  # inclusive ranges
+    skip_pages: Optional[list[int]] = None,               # explicit page_numbers to skip
     # footnote_separator_regex: str = r"^[_]{5,}$", #use this incase a different pattern is needed
-) -> List[Dict]:
+) -> list[dict]:
     """
     Extract cleaned pages with metadata:
     returns list of dicts with keys: page_number, text, section, footnotes
@@ -76,7 +76,7 @@ def extract_pages(
 
     # footnote_sep_re = re.compile(footnote_separator_regex)
     footnote_sep_re = _FOOTNOTE_SEP_RE_DEFAULT
-    pages: List[Dict] = []
+    pages: list[dict] = []
     with fitz.open(pdf_path) as doc:
         for i in range(len(doc)):
             page_number = i + 1  # human-readable page number
@@ -118,11 +118,13 @@ def extract_pages(
 
 #for testing
 if __name__ == "__main__":
+
     result = extract_pages("constitution of India.pdf")
     with open("pages.txt", "w", encoding="utf-8") as f:
         for item in result:
             for key, value in item.items():
                 f.write(f"{key}: {value}\n")
             f.write("\n")  # blank line between dictionaries
+    print('pages extracted')
     
 
