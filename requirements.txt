@@ -18,7 +18,12 @@ scikit-learn==1.7.1
 wheel
 scipy==1.16.1
 sentence-transformers==5.1.0
-
+fastapi
+uvicorn
+gradio
+pandas
+pydantic
+requests
 
 
 
