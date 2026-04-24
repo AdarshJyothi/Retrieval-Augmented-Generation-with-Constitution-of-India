@@ -14,11 +14,11 @@ class Settings:
     LLM_NAME: str         = "google/gemma-2b-it"
 
     # ── Retrieval ─────────────────────────────────────────
-    TOP_K: int            = 5
+    TOP_K: int            = 10
 
     # ── Generation ────────────────────────────────────────
-    MAX_NEW_TOKENS: int   = 512
-    TEMPERATURE: float    = 0.7
+    MAX_NEW_TOKENS: int   = 1024
+    TEMPERATURE: float    = 0.3
 
     # ── Hardware ──────────────────────────────────────────
     DEVICE: str           = "cuda" if torch.cuda.is_available() else "cpu"

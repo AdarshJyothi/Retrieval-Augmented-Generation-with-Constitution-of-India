@@ -14,7 +14,9 @@ from huggingface_hub import login
 
 login(token=os.environ["HF_TOKEN"])
 
-
+import torch
+print(f"CUDA available: {torch.cuda.is_available()}")
+print(f"Device: {'cuda' if torch.cuda.is_available() else 'cpu'}")
 
 # ─────────────────────────────────────────────
 # FastAPI server — runs in a background thread
@@ -41,7 +43,7 @@ def ask_question(query: str) -> tuple[str, str]:
         response = requests.post(
             "http://localhost:8000/ask",
             json={"query": query},
-            timeout=120,
+            timeout=300,
         )
         response.raise_for_status()
         data = response.json()
